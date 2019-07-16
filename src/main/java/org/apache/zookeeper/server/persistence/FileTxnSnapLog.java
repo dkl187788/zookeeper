@@ -84,8 +84,7 @@ public class FileTxnSnapLog {
         this.snapDir = new File(snapDir, version + VERSION);
         if (!this.dataDir.exists()) {
             if (!this.dataDir.mkdirs()) {
-                throw new IOException("Unable to create data directory "
-                        + this.dataDir);
+                throw new IOException("Unable to create data directory "+ this.dataDir);
             }
         }
         if (!this.dataDir.canWrite()) {

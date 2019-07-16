@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,16 +18,16 @@
 
 package org.apache.zookeeper.server.quorum;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.zookeeper.ZooDefs.OpCode;
 import org.apache.zookeeper.server.Request;
 import org.apache.zookeeper.server.RequestProcessor;
 import org.apache.zookeeper.server.ZooKeeperCriticalThread;
 import org.apache.zookeeper.server.ZooKeeperServerListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * This RequestProcessor matches the incoming committed requests with the
@@ -59,7 +59,7 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
     boolean matchSyncs;
 
     public CommitProcessor(RequestProcessor nextProcessor, String id,
-            boolean matchSyncs, ZooKeeperServerListener listener) {
+                           boolean matchSyncs, ZooKeeperServerListener listener) {
         super("CommitProcessor:" + id, listener);
         this.nextProcessor = nextProcessor;
         this.matchSyncs = matchSyncs;
@@ -70,7 +70,7 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
     @Override
     public void run() {
         try {
-            Request nextPending = null;            
+            Request nextPending = null;
             while (!finished) {
                 int len = toProcess.size();
                 for (int i = 0; i < len; i++) {
@@ -123,24 +123,24 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
                     while (nextPending == null && queuedRequests.size() > 0) {
                         Request request = queuedRequests.remove();
                         switch (request.type) {
-                        case OpCode.create:
-                        case OpCode.delete:
-                        case OpCode.setData:
-                        case OpCode.multi:
-                        case OpCode.setACL:
-                        case OpCode.createSession:
-                        case OpCode.closeSession:
-                            nextPending = request;
-                            break;
-                        case OpCode.sync:
-                            if (matchSyncs) {
+                            case OpCode.create:
+                            case OpCode.delete:
+                            case OpCode.setData:
+                            case OpCode.multi:
+                            case OpCode.setACL:
+                            case OpCode.createSession:
+                            case OpCode.closeSession:
                                 nextPending = request;
-                            } else {
+                                break;
+                            case OpCode.sync:
+                                if (matchSyncs) {
+                                    nextPending = request;
+                                } else {
+                                    toProcess.add(request);
+                                }
+                                break;
+                            default:
                                 toProcess.add(request);
-                            }
-                            break;
-                        default:
-                            toProcess.add(request);
                         }
                     }
                 }
@@ -157,11 +157,11 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
         if (!finished) {
             if (request == null) {
                 LOG.warn("Committed a null!",
-                         new Exception("committing a null! "));
+                        new Exception("committing a null! "));
                 return;
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Committing request:: " + request);
+                LOG.debug("Committing request:: " + request + "[" + System.currentTimeMillis() + "}");
             }
             committedRequests.add(request);
             notifyAll();
@@ -171,9 +171,9 @@ public class CommitProcessor extends ZooKeeperCriticalThread implements RequestP
     synchronized public void processRequest(Request request) {
         // request.addRQRec(">commit");
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Processing request:: " + request);
+            LOG.debug("Processing request:: " + request + "[" + System.currentTimeMillis() + "}");
         }
-        
+
         if (!finished) {
             queuedRequests.add(request);
             notifyAll();

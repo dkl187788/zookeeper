@@ -72,12 +72,14 @@ public class ClientCnxnSocketNIO extends ClientCnxnSocket {
                                 + Long.toHexString(sessionId)
                                 + ", likely server has closed socket");
             }
+            //如果读满，注意这里同一个包，要读2次，第一次读长度，第二次读内容，incomingBuffer重用
             if (!incomingBuffer.hasRemaining()) {
                 incomingBuffer.flip();
                 if (incomingBuffer == lenBuffer) {
                     recvCount++;
                     readLength();
                 } else if (!initialized) {
+                    System.out.println("---------------client connect success......");
                     readConnectResult();
                     enableRead();
                     if (findSendablePacket(outgoingQueue,
@@ -275,6 +277,7 @@ public class ClientCnxnSocketNIO extends ClientCnxnSocket {
     throws IOException {
         sockKey = sock.register(selector, SelectionKey.OP_CONNECT);
         boolean immediateConnect = sock.connect(addr);
+        // 果网络情况很好，立马可以连上，则发送ConnectRequest请求，请求和server建立session
         if (immediateConnect) {
             sendThread.primeConnection();
         }
