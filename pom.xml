@@ -8,7 +8,7 @@
     <name>zookeeper</name>
     <properties>
         <java.version>1.8</java.version>
-        <log4j2.version>2.7</log4j2.version>
+        <log4j2.version>2.15.0</log4j2.version>
         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.javadoc.skip>true</maven.javadoc.skip>
